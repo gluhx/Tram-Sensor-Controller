@@ -1,10 +1,12 @@
 import time
 import gps
-import ethernet as eth
-import temperature as temp
+import config
+import com_port as com
 
 
 while True:
+    #получаем параметры для работы
+    parameters = config.get_param()
     try:
         #получаем данные gps
         data = gps.get_data()
@@ -25,7 +27,7 @@ while True:
         eth.send_message(message)
 
         #делаем задержку на 10 секунд
-        time.sleep(10)
+        time.sleep(parameters['interval'])
     except KeyboardInterrupt:
         print("Пользователь закончил выполнение программы.")
     finally:

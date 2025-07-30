@@ -1,0 +1,6 @@
+{
+    "interval" : 10,
+    "id" : 999,
+    "led" : true,
+    "baudrate" : 9600
+}
