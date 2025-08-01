@@ -5,40 +5,44 @@ import config
 import com_port as COM
 import GPIO
 
-GPIO.init_GPIO()
-serial = COM.init_com()
+parameters = config.get_param()
+GPIO.init_GPIO(18)
+BAUDRATE = parameters['baudrate']
+PORT = '/dev/ttyUSB0'
+serial = COM.init_com(PORT, BAUDRATE)
 
 def write():
     while True:
         #получаем параметры для работы
         parameters = config.get_param()
         try:
-            #получаем данные gps
-            data = gps.get_data()
+            try:
+                #получаем данные gps
+                data = gps.get_data()
 
-            #составляем из данных сообщение
-            text_message = str(parameters['id']) + ';' + data["date"] + "," + data["time"] + ";" + data["longtitude"] + "," + data["latitude"] + ";" + data["height"]
-
-            #отравляем сообщение на eth0
+                #составляем из данных сообщение
+                text_message = str(parameters['id']) + ';' + data["date"] + "," + data["time"] + ";" + data["longtitude"] + "," + data["latitude"] + ";" + data["height"] + '\n\r'
+            except Exception as e:
+                text_message = str(parameters['id']) + ';' + "No data from GPS\n\r"
+            #отравляем сообщение на COM
+            if not serial:
+                print("Cant open port")
+                exit(1)
             COM.send_com(text=text_message, serial=serial)
-
-            if parameters['led']:
-                GPIO.led_on()
-            else:
-                GPIO.led_off()
 
             #делаем задержку
             time.sleep(parameters['interval'])
 
         except KeyboardInterrupt:
             print("Пользователь закончил выполнение программы.")
-        finally:
-            print("Конец отправки")
 
 
 def reading():
     while True:
-        COM.listen_com(serial=serial, callback=COM.command)
+        if not serial:
+            print("Cant open port")
+            exit(1)
+        COM.listen_com(serial=serial)
 
 
 

@@ -1,28 +1,39 @@
 import RPi.GPIO as GPIO
 import time
 
-led_pin = 18
+# Глобальная переменная для хранения пина
+LED_PIN = 18 
 
-def init_GPIO():
-    # Настройка режима нумерации пинов
-    GPIO.setmode(GPIO.BCM)  # или GPIO.BOARD
-
-    # Настроить пин как выход
-    GPIO.setup(led_pin, GPIO.OUT)
-
-def led_off():
-    try:
-        while True:
-            GPIO.output(led_pin, GPIO.LOW)   # Выключить
-    except KeyboardInterrupt:
-        print("Программа остановлена")
-    finally:
-        GPIO.cleanup()  # Всегда очищайте пины!
+def init_GPIO(pin):
+    """
+    Инициализирует GPIO для светодиода.
+    
+    :param pin: Номер GPIO пина (по BCM)
+    """
+    global LED_PIN
+    LED_PIN = pin
+    
+    GPIO.setmode(GPIO.BCM)              # Режим нумерации GPIO
+    GPIO.setup(LED_PIN, GPIO.OUT)       # Настраиваем пин как выход
+    led_off()                      # Выключаем светодиод при старте
+    print(f"GPIO {LED_PIN} инициализирован как выход для светодиода.")
 
 def led_on():
-    try:
-        GPIO.output(led_pin, GPIO.HIGH)  # Включить
-    except KeyboardInterrupt:
-        print("Программа остановлена")
-    finally:
-        GPIO.cleanup()  # Всегда очищайте пины!
+    """
+    Включает светодиод.
+    """
+    if LED_PIN is None:
+        print("Ошибка: светодиод не инициализирован!")
+        return
+    GPIO.output(LED_PIN, GPIO.HIGH)
+    print(f"Светодиод на GPIO {LED_PIN} включён.")
+
+def led_off():
+    """
+    Выключает светодиод.
+    """
+    if LED_PIN is None:
+        print("Ошибка: светодиод не инициализирован!")
+        return
+    GPIO.output(LED_PIN, GPIO.LOW)
+    print(f"Светодиод на GPIO {LED_PIN} выключен.")

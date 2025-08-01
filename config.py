@@ -10,7 +10,6 @@ def get_param():
             param = {
                 "interval" : data['interval'],
                 "id": data['id'],
-                "led" : data['led'],
                 "baudrate" : data['baudrate']
             }
         
@@ -22,7 +21,10 @@ def get_param():
 def change_param(parameter, value):
     data = get_param()
     try:
-        data[parameter] = value
+        if parameter == "interval":
+            data[parameter] = float(value)
+        else:
+            data[parameter] = int(value)
         with open('config.json', 'w') as file:  
             json.dump(data, file)
     
